@@ -3,15 +3,21 @@ services:
   api:
     build: ./api
     ports:
-      - 3000:3000
+      - 8080:8080
     volumes:
       - ./api:/go/src/github.com/luuminhthai/rest-api-golang/api
-    links:
-      - database
+    # depends_on:
+    #   - db
     environment:
-      - DB_NAME=project
+      - DB_NAME=rest-api-golang
+      - DB_HOSTNAME=localhost:27018
 
-  database:
-    image: mongo:latest
-    command: mongod --smallfiles --quiet --logpath=/dev/null
+  # db:
+  #   image: mongo:3.4
+  #   restart: always
+  #   container_name: rest-api-golang-db
+  #   ports:
+  #     - "27018:27018"
+  #   volumes:
+  #     - ./backup:/backup:rw
     

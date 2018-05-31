@@ -1,21 +1,32 @@
 package main
 
 import (
-	"github.com/go-martini/martini"
-	"github.com/luuminhthai/rest-api-golang/api/controllers"
-	"github.com/luuminhthai/rest-api-golang/api/models"
-	"github.com/martini-contrib/binding"
-	"github.com/martini-contrib/render"
+	"github.com/kataras/iris"
+	"gopkg.in/mgo.v2"
 )
 
+type User struct {
+	firstName string
+	lastName  string
+}
+
 func main() {
-	m := martini.Classic()
-	m.Map(models.Database())
-	m.Use(render.Renderer())
+	app := iris.Default()
 
-	pc := controllers.newUserController(models.Database())
+	session, err := mgo.Dial("localhost:27018")
+	if nil != err {
+		panic(err)
+	}
+	defer session.Close()
+	session.SetMode(mgo.Monotonic, true)
 
-	m.Get("/users", binding.Bind(models.User{}), pc.GetAllUsers)
-	m.Post("/users", binding.Bind(models.User{}), pc.PostUser)
-	m.Run()
+	c := session.DB("testinghi").C("users")
+	c.Insert(&User{"luu", "minh thai"})
+
+	app.Get("/users", func(ctx iris.Context) {
+		result := User{}
+		ctx.JSON(result)
+	})
+
+	app.Run(iris.Addr(":8080"))
 }

@@ -4,11 +4,12 @@ FROM golang:latest
 ADD . /go/src/github.com/luuminhthai/rest-api-golang/api
 
 # Install our dependencies
-RUN go get github.com/go-martini/martini
-RUN go get github.com/martini-contrib/binding
-RUN go get github.com/martini-contrib/render
+RUN go get github.com/kataras/iris
 RUN go get gopkg.in/mgo.v2
 RUN go get gopkg.in/mgo.v2/bson
+
+# Setting up working directory
+WORKDIR /go/src/github.com/luuminhthai/rest-api-golang/api
 
 # Install api binary globally within container
 RUN go install github.com/luuminhthai/rest-api-golang/api
@@ -17,4 +18,4 @@ RUN go install github.com/luuminhthai/rest-api-golang/api
 ENTRYPOINT /go/bin/api
 
 # Expose default port (3000)
-EXPOSE 3000
+EXPOSE 8080
